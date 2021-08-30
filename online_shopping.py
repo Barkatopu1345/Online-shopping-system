@@ -1,46 +1,46 @@
-import openpyxl 
+import openpyxl #for manipulation excel file
 
-productID = 1000  
+productID = 1000  #for unique product id in the list
 
 
 
-def giveID():
-    path = "shopingFile.xlsx"
-    wb_obj = openpyxl.load_workbook(path)
-    sheet = wb_obj['items']
+def giveID(): #creating unique id for the product
+    path = "shopingFile.xlsx" #path of the excel file
+    wb_obj = openpyxl.load_workbook(path) #creating openpyxl object by giving file path 
+    sheet = wb_obj['items'] #sheet name from the shopingFile.xlsx
     lst = []
     
-    __row__ = sheet.max_row
+    __row__ = sheet.max_row #getting number of rows in the given list by using sheet.max_row 
     
     for i in range(2,__row__):
-        x = sheet.cell(i,1).value
-        lst.append(x)
-    return lst
+        x = sheet.cell(i,1).value #getting first value from every single rows. i represent the row no.and 1 reperent the first cell
+        lst.append(x) #appending those value in the list
+    return lst 
 
 
 
-def createAccount():
+def createAccount(): #creating new account and storing in the userAccount sheet in the shopingFile.xlsx file
     path = "shopingFile.xlsx"
     wb_obj = openpyxl.load_workbook(path)
     sheet = wb_obj['userAccount']
-    row = sheet.max_row
+    
+    row = sheet.max_row #getting number of rows in the given list by using sheet.max_row
 
     lst = []
     for i in range(2,row+1):
-        lst.append(sheet.cell(i,2).value)
+        lst.append(sheet.cell(i,2).value) #getting 2nd value from every single rows. i represent the row no.and 2 reperent the 2nd cell
 
     name = input("Enter name: ")
     userID = input("UserId(name+digits. Ex: barkat1345): ")
     password = input("Choose a password: ")
     address = input("Enter your address: ")
     phone = int(input("Enter your phone number: "))
-    if userID in lst:
+
+    if userID in lst: #checking user given userID is exist or not in the userAccount sheet to create unique userID
         print("User id can not be accepted! please try with another user id!")
-        createAccount()
+        createAccount() # userID exist in the list. That's why calling this function recursively to do this process again.
 
-    else:
-
-
+    else: #if given userID not found in the sheet.
 
         lst2 = []
         sheet['A1'] = "Name"
@@ -49,30 +49,33 @@ def createAccount():
         sheet['D1'] = "Address"
         sheet['E1'] = "Phone"
 
-        sheet.cell(row+1,1,value = name)
-        sheet.cell(row+1,2,value = userID)
-        sheet.cell(row+1,3,value = password)
+        sheet.cell(row+1,1,value = name) #putting the user give value in the cell of the userAccount sheet of the excel file
+        sheet.cell(row+1,2,value = userID) #cell() is the method of the openpyxl. "row" represent the number of rows occupied already.
+        sheet.cell(row+1,3,value = password) 
         sheet.cell(row+1,4,value = address)
         sheet.cell(row+1,5,value = phone)
 
-        lst2.append(name)
+        lst2.append(name) #appending users information to use later.
         lst2.append(userID)
         lst2.append(password)
         lst2.append(address)
         lst2.append(phone)
         print("Congratulations! you have created an account. ")
-        wb_obj.save("shopingFile.xlsx")
-        return lst2
-    wb_obj.close()
+        
+        wb_obj.save("shopingFile.xlsx") #saving sheet after manipulation. otherwise new data will not save in the excel file
+        
+        return lst2 #returning user informations
+    
+    wb_obj.close() #closing the object
      
 
-def logIn():
+def logIn(): #login function for all kind of users
     wb_obj = openpyxl.load_workbook("shopingFile.xlsx")
-    sheet = wb_obj['soldProduct']
-    sheet2 = wb_obj['userAccount']
+    sheet = wb_obj['soldProduct'] #sheet where sold information stored
+    sheet2 = wb_obj['userAccount'] #sheet where users informations stored
 
-    row = sheet.max_row
-    column = sheet.max_column
+    row = sheet.max_row # getting maximum number of rows occupied by the values
+    column = sheet.max_column # getting maximum number of columns occupied by the values
 
     userId = "0"
     password = "0"
@@ -83,16 +86,20 @@ def logIn():
     lst = []
 
     for i in range(2,row+2):
-        lst.append(sheet2.cell(i,2).value)
+        lst.append(sheet2.cell(i,2).value) #getting and appending only all userid and password in the list.
         lst.append(sheet2.cell(i,3).value)
-    if userId not in lst:
+
+    if userId not in lst or password not in lst: # checking users validation by checking userID and password
         print("Please enter valid user id or password! ")
-        logIn()
-    else:
-        index = (lst.index(userId))+1
+        logIn() #if not find the value in the list, calling this functions recursively
+    
+    else: #if found the id and password
+        index = (lst.index(userId))+1 # getting index of userid from the list. And add 1, because the excel file count start from 1.
+                                     # on the other hand list start count from 0
         
-        for i in range(1,6):
-            temp.append(sheet2.cell(index,i).value)
+        for i in range(1,6): 
+            temp.append(sheet2.cell(index,i).value) # appending users all informations in the list from the sheet, whose.
+                                                    # userid and password found in the sheet.
     
 
 
@@ -101,7 +108,7 @@ def logIn():
 
     
 
-def buyProducts():
+def buyProducts(): 
     path = "shopingFile.xlsx"
     wb_obj = openpyxl.load_workbook(path)
     sheet = wb_obj['items']
@@ -269,15 +276,20 @@ def checkExistingProduct(name):
 
 
 def printItems():
+
     path = "shopingFile.xlsx"
     wb_obj = openpyxl.load_workbook(path)
     sheet = wb_obj['items']
+
     __row__ = sheet.max_row
     column = sheet.max_column
-    print(sheet.cell(1,1).value+"       "+sheet.cell(1,2).value+"       "+sheet.cell(1,3).value+"       "+sheet.cell(1,4).value)
+
+    print(sheet.cell(1,1).value+"       "+sheet.cell(1,2).value+"       "+sheet.cell(1,3).value+"       "+sheet.cell(1,4).value) # printing
+    # the first rows of the "items sheet". which are nothing but column name
+   
     for i in range(2,__row__+1):
         for j in range(1,column+1):
-            print(sheet.cell(i,j).value, end = "            ")
+            print(sheet.cell(i,j).value, end = "            ") #printing all the items and item information one by one
         print()
 
 def showItems():
@@ -334,22 +346,29 @@ def updateItems():
     wb_obj.close()
 
 
-def deleteItems():
+def deleteItems(): # delete an item from the sheet by admin
     path = "shopingFile.xlsx"
     wb_obj = openpyxl.load_workbook(path)
     sheet = wb_obj['items']
 
     __row__ = sheet.max_row
-    printItems()
-    id = int(input("Enter your product ID: "))
+
+    printItems() #showing all the existing items in the list
+
+    id = int(input("Enter the product ID: "))
+    
     index = 0
-    for i in range(1,__row__+1):
-        if sheet.cell(i,1).value == id:
-            index = i
-    print(index)
-    sheet.delete_rows(index,1)
-    wb_obj.save('shopingFile.xlsx')
+
+    for i in range(1,__row__+1): #finding the index of the item id in the sheet
+        if sheet.cell(i,1).value == id:  # if cells value and given id matched
+            index = i # then index = i
+
+    sheet.delete_rows(index,1) # Deleting the entire row, where the id was found.
+
+    wb_obj.save('shopingFile.xlsx') #saving the work
+    
     printItems()
+
     wb_obj.close()
 
 
@@ -386,14 +405,16 @@ def Menu():
 
 
 
-x = Menu()
+# x = Menu()
 
-if x == 1:
-    writeItems()
-elif x == 2:
-    updateItems()
-elif x == 3:
-    deleteItems()
-elif x == 4:
-    buyProducts()
+# if x == 1:
+#     writeItems()
+# elif x == 2:
+#     updateItems()
+# elif x == 3:
+#     deleteItems()
+# elif x == 4:
+#     buyProducts()
 # createAccount()
+# lst = logIn()
+# print(lst)

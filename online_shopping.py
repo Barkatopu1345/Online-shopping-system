@@ -333,7 +333,7 @@ def printItems(): # printing the item table from the excel sheet
 
 
 
-def showItems():
+def showItems(): #printing item table for the customer
     path = "shopingFile.xlsx"
     wb_obj = openpyxl.load_workbook(path)
     sheet = wb_obj['items']
@@ -480,9 +480,9 @@ def Menu(): # this function for calling other user dependent other functions.
 
 
 
-
+x = Menu()
 while(True):
-    x = Menu()
+
 
 
     if x == 1:
@@ -496,6 +496,4 @@ while(True):
     decission = input("Do you want to logout? y/n: ")
     if decission == 'y' or decission == 'Y':
         break
-# createAccount()
-# print(logIn())
-# printItems()
+

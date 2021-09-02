@@ -438,33 +438,39 @@ def deleteItems(): # delete an item from the sheet by admin
     else: return
     wb_obj.close()
 
-
 decission = 00
+
+def userDecission(profile,userId,password): # function for user's identity, get and return the user decission according to user
+    global decission # global variable
+    if (profile == True and userId == 'barkat1345' and password == '1234'): # checking user admin or not
+        print("Add new item in the list -> 1")  # admin userID = barkat1345, password = 1234
+        print("Update an item in the list -> 2")
+        print("Delete an item from the list -> 3")
+        decission = int(input("Chose your option: "))
+        return decission
+
+    elif(profile == True and userId != 'barkat1345' and password != '1234'): # if user is not an admin
+        print("Buy a product -> 4")
+        decission = int(input("Chose your option: "))
+        return decission
+    elif(profile == False):
+        print("You may do not have any account! or you enter the wrong id and password. Please try again")
+
+
+
 
 def Menu(): # this function for calling other user dependent other functions.
     account = input("Do you have any account? y/n: ")
     if account == 'y' or account == 'Y':
-        global decission # global variable
+       
         existAccount = input("Do you want to login? y/n: ")
         
         if existAccount == 'y' or existAccount == 'Y':
             userId = input("Enter your user id: ")
             password = input("Enter your password: ")
             profile = logIn(userId,password) # getting user's information from logIn()
-            
-            if (profile == True and userId == 'barkat1345' and password == '1234'): # checking user admin or not
-                print("Add new item in the list -> 1")  # admin userID = barkat1345, password = 1234
-                print("Update an item in the list -> 2")
-                print("Delete an item from the list -> 3")
-                decission = int(input("Chose your option: "))
-                return decission
+            return (userDecission(profile,userId,password)) # calling this function for getting user information
 
-            elif(profile == True and userId != 'barkat1345' and password != '1234'): # if user is not an admin
-                print("Buy a product -> 4")
-                decission = int(input("Chose your option: "))
-                return decission
-            elif(profile == False):
-                print("You may do not have any account! or you enter the wrong id and password. Please try again")
         else: # if user don't want to log in
             
             showItems()
@@ -480,20 +486,28 @@ def Menu(): # this function for calling other user dependent other functions.
 
 
 
-x = Menu()
-while(True):
+x = Menu() # calling the menu function for user's decission
+
+if x != None: # if the user just created an account, then decission will be none.
+    while(True):
 
 
 
-    if x == 1:
-        writeItems()
-    elif x == 2:
-        updateItems()
-    elif x == 3:
-        deleteItems()
-    elif x == 4:
-        buyProducts()
-    decission = input("Do you want to logout? y/n: ")
-    if decission == 'y' or decission == 'Y':
-        break
+        if x == 1:
+            writeItems()
+        elif x == 2:
+            updateItems()
+        elif x == 3:
+            deleteItems()
+        elif x == 4:
+            buyProducts()
+        decission = input("Do you want to logout? y/n: ")
+        if decission == 'y' or decission == 'Y':
+            break
+        else:
+            if(x== 1 or x==2 or x==3): 
+                x = userDecission(True,'barkat1345','1234') # getting admin decission 
+            else:
+                x = userDecission(True,'x','x') #getting customer decission
+
 

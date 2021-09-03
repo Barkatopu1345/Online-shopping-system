@@ -1,5 +1,8 @@
 import openpyxl #for writting and reading excel file
 from tabulate import tabulate # for generate table in printItems() and showItems()
+from datetime import datetime # for time
+import random # for random generator
+
 
 
 productID = 1000  #for unique product id in the list
@@ -158,6 +161,9 @@ def confirmBuy(productID,productName,price,quantity,total): # purchase confirmat
     row = sheet.max_row
     column = sheet.max_column
 
+    now = datetime.now()
+    dtString = now.strftime("%d/%m/%Y %H-%M-%S") # collecting current date and time.
+
     print("For confirmation your purchase, login again")
     userId = input("Enter your user id: ")
     password = input("Enter your password: ")
@@ -166,12 +172,12 @@ def confirmBuy(productID,productName,price,quantity,total): # purchase confirmat
         print("Please enter the valid id and password or you may do not have any account! ")
         return
     else:
-        name = input("Enter your name: ")
-        address = input("Enter your address: ")
-        phone = input("Enter your phone number: ")
+        name = input("Enter reciever name: ")
+        address = input("Enter reciever address: ")
+        phone = input("Enter reciever phone number: ")
         method = input("Enter payment method: cash on delivary(COD)/bkash/nogod: ")  # asking payment method  
 
-        sheet['A1'] = "Product ID" # naming the columns in the excel file
+        sheet['A1'] = "Order ID" # naming the columns in the excel file
         sheet['B1'] = "Product Name"
         sheet['C1'] = "Quantity"
         sheet['D1'] = "Unit price"
@@ -182,7 +188,11 @@ def confirmBuy(productID,productName,price,quantity,total): # purchase confirmat
         sheet['I1'] = "Payment Method"
         sheet['J1'] = "Time"
 
-        lst = [["Product ID",productID],["Product Name",productName],["Quantity",quantity],
+        id = now.strftime("%d%m%Y%H%M%S") # converting datetime to string for using as unique order id
+        id = str(id)
+  
+        
+        lst = [["Order ID",id],["Product Name",productName],["Quantity",quantity],
             ["Unit price",price],[" Total",total],["Name",name],["address",address],
             ["phone",phone],[" Payment Method",method]
         ]
@@ -190,11 +200,29 @@ def confirmBuy(productID,productName,price,quantity,total): # purchase confirmat
 
 
         print(tabulate(lst, tablefmt="grid")) # showing the product and user information before confirm the purchase by generating table by tabulate module
+        
+        val = input("Do you want any discount? y/n: ")
+        x = 0
+        if val == 'y' or val == 'Y':
+            x = random.randint(1, 100) # giving discount between 1-100tk 
+            print("Congratulation! you got "+str(x)+ "tk discount! We will update your cart.")
 
+            total = total - x
+            print("After updating your cart")
+
+            lst = [["Order ID",id],["Product Name",productName],["Quantity",quantity],
+                ["Unit price",price],[" Total",total],["Name",name],["address",address],
+                ["phone",phone],[" Payment Method",method]
+            ]
+            
+
+
+            print(tabulate(lst, tablefmt="grid")) # showing the product and user information before confirm the purchase by generating table by tabulate module
+            
         decission = input("Confirm your order? y/n: ")
         if decission == 'y' or decission == 'Y':
             
-            sheet.cell(row+1,1,value = productID) # writting the purchase information in the excel file
+            sheet.cell(row+1,1,value = id) # writting the purchase information in the excel file
             sheet.cell(row+1,2,value = productName)
             sheet.cell(row+1,3,value = quantity)
             sheet.cell(row+1,4,value = price)
@@ -203,6 +231,8 @@ def confirmBuy(productID,productName,price,quantity,total): # purchase confirmat
             sheet.cell(row+1,7,value = address)
             sheet.cell(row+1,8,value = str(phone))
             sheet.cell(row+1,9,value = method)
+            sheet.cell(row+1,10,value = dtString)
+            sheet.cell(row+1,10).number_format ="dd/mm/YYYY HH:MM:SS" # formatting the cell 
 
 
 
@@ -269,15 +299,15 @@ def writeItems(): # writting new product in the product/item list
             sheet.cell(i,3,value = price)
             
             sheet.cell(i,4,value = quantity)
-            
+            wb_obj.save('shopingFile.xlsx') 
+            printItems()
             check = input("Want to add more items? y/n: ")
             print(end = '\n')
             if check == 'n' or check == 'N':
                 loopChecker = False # whenever loopChecker is False, the while loop break
 
     
-    wb_obj.save('shopingFile.xlsx') 
-    printItems()
+
     wb_obj.close()
 
 
@@ -438,20 +468,26 @@ def deleteItems(): # delete an item from the sheet by admin
     else: return
     wb_obj.close()
 
-decission = 00
 
 def userDecission(profile,userId,password): # function for user's identity, get and return the user decission according to user
-    global decission # global variable
+    decission = 00 # global variable
     if (profile == True and userId == 'barkat1345' and password == '1234'): # checking user admin or not
-        print("Add new item in the list -> 1")  # admin userID = barkat1345, password = 1234
-        print("Update an item in the list -> 2")
-        print("Delete an item from the list -> 3")
-        decission = int(input("Chose your option: "))
+        check = True
+        
+        while(check == True):
+            print("Add new item in the list -> 1")  # admin userID = barkat1345, password = 1234
+            print("Update an item in the list -> 2")
+            print("Delete an item from the list -> 3")
+            decission = int(input("Chose your option: "))
+            if decission != 1 and decission != 2 and decission != 3:
+                print("You enter the wrong number! Please try again.")
+            else:
+                check = False
+                break
         return decission
 
     elif(profile == True and userId != 'barkat1345' and password != '1234'): # if user is not an admin
-        print("Buy a product -> 4")
-        decission = int(input("Chose your option: "))
+        decission = 4
         return decission
     elif(profile == False):
         print("You may do not have any account! or you enter the wrong id and password. Please try again")
@@ -509,5 +545,4 @@ if x != None: # if the user just created an account, then decission will be none
                 x = userDecission(True,'barkat1345','1234') # getting admin decission 
             else:
                 x = userDecission(True,'x','x') #getting customer decission
-
 
